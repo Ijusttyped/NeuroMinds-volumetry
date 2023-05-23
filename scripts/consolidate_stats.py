@@ -8,9 +8,12 @@ def consolidate_stats_files(input_dir: str, output_file: str):
     stats = []
     for file in Path(input_dir).rglob("stats.csv"):
         data = pd.read_csv(file)
+        data["file"] = file.as_posix()
+        data = data.pivot(columns=["StructName"], values=["Volume_mm3"], index=["file"])
+        data.columns = data.columns.map('-'.join).str.strip('-')
         stats.append(data)
     stats_data = pd.concat(stats)
-    stats_data.to_csv(output_file, index=False)
+    stats_data.to_csv(output_file, index=True)
     print(
         f"Consolidated stats file with {len(stats_data)} records saved to {output_file}"
     )
