@@ -1,5 +1,5 @@
-#!/bin/bash -eux
-IN_FILENAME="${2:-nifti.nii.gz}"
+#!/bin/bash
+IN_FILENAME="${2:-*.nii.gz}"
 
 files_found=$(find "${1:-data}" -name "${IN_FILENAME}" -print0 | xargs -0)
 
