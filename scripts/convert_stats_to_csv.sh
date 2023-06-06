@@ -9,8 +9,17 @@ for file in $files_found; do
   out_dir="$(dirname ${file})/"
 
   header=($(grep ColHeaders ${file} | sed 's/ColHeaders  //' | tr ' ' ','))
-  grep -v '^#' ${file} | sed 's/  */,/g' > mystats.tmp
-  echo "${header[*]}" | cat - mystats.tmp > mystats_with_header.tmp
-  mv mystats_with_header.tmp "${out_dir}"stats.csv
-  rm mystats.tmp
+  header=${header#*,}
+
+  # Modify the sed command to remove leading whitespaces as well
+  grep -v '^#' ${file} | sed -E 's/^ +| +$//g' | tr -s ' ' ',' > mystats.tmp
+
+  # Add the header directly instead of using echo
+  printf "%s\n" "${header[*]}" > header.tmp
+
+  # Combine the header and the stats using cat
+  cat header.tmp mystats.tmp > "${out_dir}"stats.csv
+
+  # Remove temporary files
+  rm mystats.tmp header.tmp
 done
